@@ -12,6 +12,7 @@ require {
 	type unconfined_t;
 	role unconfined_r;
 	class file { ioctl getattr setattr create read write unlink open relabelto };
+	class dir { search write add_name };
 	class process transition;
 	type fs_t;
 	class filesystem getattr;
@@ -23,6 +24,7 @@ require {
 	class sock_file write;
 	type kernel_t;
 	type var_run_t;
+	class capability sys_tty_config;
 }
 
 # Define our new types that testprog will use, and ensure that we tell the policy that testprog_exec_t is a file
@@ -32,6 +34,10 @@ type testprog_exec_t;
 files_type(testprog_exec_t);
 type testprog_etc_t;
 files_type(testprog_etc_t);
+type testprog_var_run_t;
+files_type(testprog_var_run_t);
+type testprog_data_t;
+files_type(testprog_data_t);
 #typeattribute testprog_exec_t file_type, non_security_file_type; 
 
 # Allow the testprog_t type under the unconfined_r role
@@ -50,18 +56,20 @@ allow testprog_t testprog_etc_t : file { open read getattr };
 # We know from sealert that these allow rules are required, largely for writing to the console
 allow testprog_t console_device_t:chr_file { open write getattr ioctl };
 allow testprog_t self:unix_dgram_socket { create connect };
+allow testprog_t self:capability sys_tty_config;
 allow testprog_t user_devpts_t:chr_file { append read write getattr };
 
 # Allow writing to syslog through the devlog socket
 allow testprog_t devlog_t:sock_file write;
 
-
-
+# Allow testprog access to it's data directory
+allow testprog_t testprog_data_t:dir { search write add_name };
+allow testprog_t testprog_data_t:file { create open write append getattr };
 
 
 ##!!!! The file '/dev/log' is mislabeled on your system.
 ##!!!! Fix with $ restorecon -R -v /dev/log
 allow testprog_t kernel_t:unix_dgram_socket sendto;
-#
-##!!!! WARNING: 'var_run_t' is a base type.
-allow testprog_t var_run_t:file write;
+
+# Allow testprog_t to open and write it's PID file without accessing the whole var_run_t context/directory
+allow testprog_t testprog_var_run_t:file { open write getattr };
