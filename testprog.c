@@ -9,6 +9,7 @@
  * http://www.cprogramming.com/tutorial/c/lesson14.html
  * https://cboard.cprogramming.com/c-programming/155124-using-c-program-append-text-txt-file.html
  * https://stackoverflow.com/questions/24249369/how-to-write-pid-to-file-on-unix
+ * https://www.gnu.org/software/libc/manual/html_node/Syslog-Example.html
  */
 
 #include <stdio.h>
