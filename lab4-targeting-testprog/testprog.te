@@ -1,0 +1,33 @@
+#
+# Useful references for building this policy:
+#
+# https://www.redhat.com/archives/fedora-selinux-list/2008-June/msg00076.html
+# https://serverfault.com/questions/628344/selinux-cannot-confine-firefox-process-to-mozilla-t-domain
+#
+#
+policy_module(testprog, 0.1)
+
+# Require all the types, attributes and classes we reference in this policy
+require {
+	type unconfined_t;
+	role unconfined_r;
+	class file { ioctl getattr setattr create read write unlink open relabelto };
+	class process transition;
+}
+
+# Define our new types that testprog will use, and ensure that we tell the policy that testprog_exec_t is a file
+type testprog_t;
+domain_type(testprog_t);
+type testprog_exec_t;
+files_type(testprog_exec_t);
+
+# Allow the testprog_t type under the unconfined_r role
+role unconfined_r types testprog_t;
+
+# Tell SELinux that testprog_exec_t is an entrypoint to the tetprog_t domain
+allow testprog_t testprog_exec_t : file { ioctl read getattr lock execute execute_no_trans entrypoint open } ;
+# Make the type transition from unconfined_t (i.e. user shell) to testprog_t
+type_transition unconfined_t testprog_exec_t : process testprog_t;
+# Explicitly allow the type transition we have just created
+allow unconfined_t testprog_t : process transition ; 
+
