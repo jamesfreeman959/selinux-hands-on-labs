@@ -32,10 +32,10 @@ type testprog_t;
 domain_type(testprog_t);
 type testprog_exec_t;
 files_type(testprog_exec_t);
-type testprog_etc_t;
-files_type(testprog_etc_t);
+type testprog_conf_t;
+files_config_file(testprog_conf_t);
 type testprog_var_run_t;
-files_type(testprog_var_run_t);
+files_pid_file(testprog_var_run_t);
 type testprog_data_t;
 files_type(testprog_data_t);
 #typeattribute testprog_exec_t file_type, non_security_file_type; 
@@ -50,26 +50,22 @@ type_transition unconfined_t testprog_exec_t : process testprog_t;
 # Explicitly allow the type transition we have just created
 allow unconfined_t testprog_t : process transition ; 
 
-#allow testprog_t fs_t:filesystem getattr;
-allow testprog_t testprog_etc_t : file { open read getattr };
+# Allow testprog to read it's config file using Red Hat's code for ntpd as example
+allow testprog_t testprog_conf_t:file read_file_perms;
 
 # We know from sealert that these allow rules are required, largely for writing to the console
 allow testprog_t console_device_t:chr_file { open write getattr ioctl };
-allow testprog_t self:unix_dgram_socket { create connect };
 allow testprog_t self:capability sys_tty_config;
 allow testprog_t user_devpts_t:chr_file { append read write getattr };
-
-# Allow writing to syslog through the devlog socket
-allow testprog_t devlog_t:sock_file write;
 
 # Allow testprog access to it's data directory
 allow testprog_t testprog_data_t:dir { search write add_name };
 allow testprog_t testprog_data_t:file { create open write append getattr };
 
+# Allow syslog access based on Red Hat's code for ntpd
+logging_send_syslog_msg(testprog_t)
 
-##!!!! The file '/dev/log' is mislabeled on your system.
-##!!!! Fix with $ restorecon -R -v /dev/log
-allow testprog_t kernel_t:unix_dgram_socket sendto;
+# Allow testprog to create and write it's PID file - based on code from Red Hat for ntpd
+manage_files_pattern(testprog_t, testprog_var_run_t, testprog_var_run_t)
+files_pid_filetrans(testprog_t, testprog_var_run_t, file)
 
-# Allow testprog_t to open and write it's PID file without accessing the whole var_run_t context/directory
-allow testprog_t testprog_var_run_t:file { open write getattr };
