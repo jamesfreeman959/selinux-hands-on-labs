@@ -82,3 +82,27 @@ ntp.fc  ntp.if  ntp.te
 ```
 
 Fantastic! There's our raw policy files for ntp just as we wanted. In the next lab we'll start to understand this policy.
+
+# Finding documentation
+
+As well as accessing the source, all distribution provided modules usually come with good documentation. This won't show you the source code for the policy, but it will tell you how the policy is intended to be used, what booleans and other aspects are available, and so on. To ensure the documentation is on your system:
+
+```
+[root@selinux-dev2 ~]# subscription-manager repos --enable=rhel-7-server-optional-rpms
+[root@selinux-dev2 ~]# yum -y install selinux-policy-doc lynx
+[root@selinux-dev2 ~]# /etc/cron.daily/man-db.cron
+```
+
+The last line rebuilds the man page database so you can search for any new pages installed.
+
+You can search for selinux related man pages as follows:
+
+```
+[root@selinux-dev2 ~]# man -k _selinux
+```
+
+Or view the policy documentation:
+
+```
+[root@selinux-dev2 ~]# lynx /usr/share/doc/selinux-policy/html/index.html
+```
