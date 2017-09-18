@@ -1,0 +1,41 @@
+#
+# Useful references for building this policy:
+#
+# https://www.redhat.com/archives/fedora-selinux-list/2008-June/msg00076.html
+# https://serverfault.com/questions/628344/selinux-cannot-confine-firefox-process-to-mozilla-t-domain
+#
+#
+policy_module(testcat, 0.1)
+
+# Require all the types, attributes and classes we reference in this policy
+require {
+	type unconfined_t;
+	role unconfined_r;
+	class file { ioctl getattr setattr create read write unlink open relabelto };
+	class process transition;
+        type console_device_t;
+        type user_devpts_t;
+        class unix_dgram_socket { create connect sendto };
+        class chr_file { append read write open getattr ioctl };
+        class capability sys_tty_config;
+}
+
+# Define our new types that testcat will use, and ensure that we tell the policy that testcat_exec_t is a file
+type testcat_t;
+domain_type(testcat_t);
+type testcat_exec_t;
+files_type(testcat_exec_t);
+
+# Allow the testcat_t type under the unconfined_r role
+role unconfined_r types testcat_t;
+
+# Tell SELinux that testcat_exec_t is an entrypoint to the tetprog_t domain
+allow testcat_t testcat_exec_t : file { ioctl read getattr lock execute execute_no_trans entrypoint open } ;
+# Make the type transition from unconfined_t (i.e. user shell) to testcat_t
+type_transition unconfined_t testcat_exec_t : process testcat_t;
+# Explicitly allow the type transition we have just created
+allow unconfined_t testcat_t : process transition ;
+
+allow testcat_t console_device_t:chr_file { open write getattr ioctl };
+allow testcat_t self:capability sys_tty_config;
+allow testcat_t user_devpts_t:chr_file { append read write getattr };
