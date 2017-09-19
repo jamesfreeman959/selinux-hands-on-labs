@@ -1,0 +1,4 @@
+/usr/bin/testprog(.*)?	   system_u:object_r:testprog_exec_t:s0
+/etc/testprog(.*)?.conf	   system_u:object_r:testprog_conf_t:s0
+/var/run/testprog(.*).pid	   system_u:object_r:testprog_var_run_t:s0
+/var/testprog(/.*)?	   system_u:object_r:testprog_data_t:s0

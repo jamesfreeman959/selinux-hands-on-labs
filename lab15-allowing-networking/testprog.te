@@ -5,7 +5,7 @@
 # https://serverfault.com/questions/628344/selinux-cannot-confine-firefox-process-to-mozilla-t-domain
 #
 #
-policy_module(testprog, 0.2.0)
+policy_module(testprog, 0.2.1)
 
 # Require all the types, attributes and classes we reference in this policy
 require {
