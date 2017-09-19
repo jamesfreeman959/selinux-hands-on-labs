@@ -1,12 +1,12 @@
 [Unit]
-Description=SELinux Test Program
+Description=SELinux Test Program with Networking
 
 [Service]
 #Type=forking
 # The PID file is optional, but recommended in the manpage
 # "so that systemd can identify the main process of the daemon"
-PIDFile=/var/run/testprog.pid
-ExecStart=/usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
+PIDFile=/var/run/testprog-net.pid
+ExecStart=/usr/bin/testprog-net /etc/testprog-net.conf /var/run/testprog-net.pid
 
 [Install]
 WantedBy=multi-user.target

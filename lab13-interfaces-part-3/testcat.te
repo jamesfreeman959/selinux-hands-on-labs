@@ -41,4 +41,4 @@ allow testcat_t self:capability sys_tty_config;
 allow testcat_t user_devpts_t:chr_file { append read write getattr };
 
 # Use the interface defined for testprog data to allow us to access it's files from our confined domain
-testprog_read_data(testcat_1);
+testprog_read_data(testcat_t);

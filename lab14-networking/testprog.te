@@ -1,0 +1,74 @@
+#
+# Useful references for building this policy:
+#
+# https://www.redhat.com/archives/fedora-selinux-list/2008-June/msg00076.html
+# https://serverfault.com/questions/628344/selinux-cannot-confine-firefox-process-to-mozilla-t-domain
+#
+#
+policy_module(testprog, 0.1.10)
+
+# Require all the types, attributes and classes we reference in this policy
+require {
+	type unconfined_t;
+	role unconfined_r;
+	class file { ioctl getattr setattr create read write unlink open relabelto };
+	class dir { search write add_name };
+	class process transition;
+	type fs_t;
+	class filesystem getattr;
+	type console_device_t;
+	type user_devpts_t;
+	class unix_dgram_socket { create connect sendto };
+	class chr_file { append read write open getattr ioctl };
+	type devlog_t;	
+	class sock_file write;
+	type kernel_t;
+	type var_run_t;
+	class capability sys_tty_config;
+}
+
+# Define our new types that testprog will use, and ensure that we tell the policy that testprog_exec_t is a file
+type testprog_t;
+domain_type(testprog_t);
+type testprog_exec_t;
+files_type(testprog_exec_t);
+type testprog_conf_t;
+files_config_file(testprog_conf_t);
+type testprog_var_run_t;
+files_pid_file(testprog_var_run_t);
+type testprog_data_t;
+files_type(testprog_data_t);
+#typeattribute testprog_exec_t file_type, non_security_file_type; 
+
+# Allow the testprog_t type under the unconfined_r role
+role unconfined_r types testprog_t;
+
+# Tell SELinux that testprog_exec_t is an entrypoint to the tetprog_t domain
+allow testprog_t testprog_exec_t : file { ioctl read getattr lock execute execute_no_trans entrypoint open } ;
+# Make the type transition from unconfined_t (i.e. user shell) to testprog_t
+type_transition unconfined_t testprog_exec_t : process testprog_t;
+# Explicitly allow the type transition we have just created
+allow unconfined_t testprog_t : process transition ; 
+
+init_daemon_domain(testprog_t, testprog_exec_t)
+
+
+# Allow testprog to read it's config file using Red Hat's code for ntpd as example
+allow testprog_t testprog_conf_t:file read_file_perms;
+
+# We know from sealert that these allow rules are required, largely for writing to the console
+allow testprog_t console_device_t:chr_file { open write getattr ioctl };
+allow testprog_t self:capability sys_tty_config;
+allow testprog_t user_devpts_t:chr_file { append read write getattr };
+
+# Allow testprog access to it's data directory
+allow testprog_t testprog_data_t:dir { search write add_name };
+allow testprog_t testprog_data_t:file { create open write append getattr };
+
+# Allow syslog access based on Red Hat's code for ntpd
+logging_send_syslog_msg(testprog_t)
+
+# Allow testprog to create and write it's PID file - based on code from Red Hat for ntpd
+manage_files_pattern(testprog_t, testprog_var_run_t, testprog_var_run_t)
+files_pid_filetrans(testprog_t, testprog_var_run_t, file)
+
