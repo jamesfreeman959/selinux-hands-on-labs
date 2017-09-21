@@ -5,7 +5,7 @@
 # https://serverfault.com/questions/628344/selinux-cannot-confine-firefox-process-to-mozilla-t-domain
 #
 #
-policy_module(testprog, 0.2.1)
+policy_module(testprog, 0.2.26)
 
 # Require all the types, attributes and classes we reference in this policy
 require {
@@ -20,11 +20,14 @@ require {
 	type user_devpts_t;
 	class unix_dgram_socket { create connect sendto };
 	class chr_file { append read write open getattr ioctl };
-	type devlog_t;	
+	type devlog_t;
 	class sock_file write;
 	type kernel_t;
 	type var_run_t;
 	class capability sys_tty_config;
+
+	class tcp_socket { create accept listen };
+	attribute port_type;
 }
 
 # Define our new types that testprog will use, and ensure that we tell the policy that testprog_exec_t is a file
@@ -38,7 +41,9 @@ type testprog_var_run_t;
 files_pid_file(testprog_var_run_t);
 type testprog_data_t;
 files_type(testprog_data_t);
-#typeattribute testprog_exec_t file_type, non_security_file_type; 
+
+type testprog_port_t;
+typeattribute testprog_port_t port_type;
 
 # Allow the testprog_t type under the unconfined_r role
 role unconfined_r types testprog_t;
@@ -48,7 +53,7 @@ allow testprog_t testprog_exec_t : file { ioctl read getattr lock execute execut
 # Make the type transition from unconfined_t (i.e. user shell) to testprog_t
 type_transition unconfined_t testprog_exec_t : process testprog_t;
 # Explicitly allow the type transition we have just created
-allow unconfined_t testprog_t : process transition ; 
+allow unconfined_t testprog_t : process transition ;
 
 init_daemon_domain(testprog_t, testprog_exec_t)
 
@@ -72,3 +77,8 @@ logging_send_syslog_msg(testprog_t)
 manage_files_pattern(testprog_t, testprog_var_run_t, testprog_var_run_t)
 files_pid_filetrans(testprog_t, testprog_var_run_t, file)
 
+# Allow our new network capabilities
+allow testprog_t self:tcp_socket create_stream_socket_perms;
+corenet_tcp_sendrecv_generic_node(testprog_t)
+corenet_tcp_bind_generic_node(testprog_t)
+allow testprog_t testprog_port_t:tcp_socket { name_bind };
