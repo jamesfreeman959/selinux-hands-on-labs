@@ -1,0 +1,19 @@
+########################################
+### <summary>
+###	Read testprog data files.
+### </summary>
+### <param name="domain">
+###	<summary>
+###	Domain allowed to read the data files.
+###	</summary>
+### </param>
+##
+interface(`testprog_read_data',`
+	gen_require(`
+		type testprog_data_t;
+	')
+
+	# Allow the domain passed as argument 1 to access the testprog data
+	allow $1 testprog_data_t:dir { search add_name };
+	allow $1 testprog_data_t:file { open read getattr };
+')
