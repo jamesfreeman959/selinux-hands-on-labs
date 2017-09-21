@@ -5,7 +5,7 @@
 # https://serverfault.com/questions/628344/selinux-cannot-confine-firefox-process-to-mozilla-t-domain
 #
 #
-policy_module(testprog, 0.2.26)
+policy_module(testprog, 0.2.27)
 
 # Require all the types, attributes and classes we reference in this policy
 require {
@@ -45,6 +45,8 @@ files_type(testprog_data_t);
 type testprog_port_t;
 typeattribute testprog_port_t port_type;
 
+bool allow_testprog_use_network true;
+
 # Allow the testprog_t type under the unconfined_r role
 role unconfined_r types testprog_t;
 
@@ -78,7 +80,9 @@ manage_files_pattern(testprog_t, testprog_var_run_t, testprog_var_run_t)
 files_pid_filetrans(testprog_t, testprog_var_run_t, file)
 
 # Allow our new network capabilities
-allow testprog_t self:tcp_socket create_stream_socket_perms;
-corenet_tcp_sendrecv_generic_node(testprog_t)
-corenet_tcp_bind_generic_node(testprog_t)
-allow testprog_t testprog_port_t:tcp_socket { name_bind };
+tunable_policy(`allow_testprog_use_network',`
+	allow testprog_t self:tcp_socket create_stream_socket_perms;
+	corenet_tcp_sendrecv_generic_node(testprog_t)
+	corenet_tcp_bind_generic_node(testprog_t)
+	allow testprog_t testprog_port_t:tcp_socket { name_bind };
+')
