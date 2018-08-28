@@ -1,6 +1,6 @@
 # Introduction
 
-![Quru Logo](https://raw.githubusercontent.com/jamesfreeman959/selinux-hands-on-labs/master/quru374.png)
+[![Quru Logo](https://raw.githubusercontent.com/jamesfreeman959/selinux-hands-on-labs/master/quru374.png)](https://www.quru.com)
 
 During my career at Quru (a Red Hat Premier Partner), it became very clear to me that very few people actually understand SELinux, let alone implement it in their environments. Many companies I have worked with simply turn it off as a matter of course. I have even seen commercial software distributed for Enterprise Linux distributions which lists disabling SELinux as an installation step. As a result I felt it prudent that I get to grips with this technology both for my own understanding, and to help others.
 
