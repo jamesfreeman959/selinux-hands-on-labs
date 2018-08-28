@@ -1,6 +1,8 @@
 # Introduction
 
-This project started from one simple requirement - to get to grips with SELinux for a project at work. SELinux has been around for years and whilst it has been championed by many in the industry, in my career I have witnessed many others shun it. I have worked with many companies where the solution to SELinux issues was simply to turn it off, and indeed I know of several software vendors who state that SELinux should be turned off in their installation instructions.
+![Quru Logo](https://raw.githubusercontent.com/jamesfreeman959/selinux-hands-on-labs/master/quru374.png)
+
+During my career at Quru (a Red Hat Premier Partner), it became very clear to me that very few people actually understand SELinux, let alone implement it in their environments. Many companies I have worked with simply turn it off as a matter of course. I have even seen commercial software distributed for Enterprise Linux distributions which lists disabling SELinux as an installation step. As a result I felt it prudent that I get to grips with this technology both for my own understanding, and to help others.
 
 With the advent of the GDPR this solution is no longer acceptable. Whilst this project does not intend to get into any debate on the meaning or implementation of the GDPR, it is based on the premise that in the event of an attack on a system (whether that attack was successful or not), it would have been better to have taken advantage of this additonal security layer than to have simply turned it off because it was deemed too complex or difficult to get working.
 
