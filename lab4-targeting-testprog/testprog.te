@@ -24,7 +24,7 @@ files_type(testprog_exec_t);
 # Allow the testprog_t type under the unconfined_r role
 role unconfined_r types testprog_t;
 
-# Tell SELinux that testprog_exec_t is an entrypoint to the tetprog_t domain
+# Tell SELinux that testprog_exec_t is an entrypoint to the testprog_t domain
 allow testprog_t testprog_exec_t : file { ioctl read getattr lock execute execute_no_trans entrypoint open } ;
 # Make the type transition from unconfined_t (i.e. user shell) to testprog_t
 type_transition unconfined_t testprog_exec_t : process testprog_t;

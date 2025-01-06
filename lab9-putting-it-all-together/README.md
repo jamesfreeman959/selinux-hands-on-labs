@@ -1,6 +1,6 @@
 # Putting It All Together
 
-Now it's time to put all this together and build a working policy to enable us to run testprog from the shell. First of all we shall decide what contexts to put the files and directories into as we shall build the policy around that. To follow the practise used for other applications on EL7 (including our reference policy **ntp**) our file contexts could look like this:
+Now it's time to put all this together and build a working policy to enable us to run `testprog` from the shell. First of all we shall decide what contexts to put the files and directories into as we shall build the policy around that. To follow the practise used for other applications on EL7 (including our reference policy `ntp`) our file contexts will look like this:
 
 ```
 [root@selinux-dev lab9-putting-it-all-together]# cat testprog.fc
@@ -10,9 +10,9 @@ Now it's time to put all this together and build a working policy to enable us t
 /var/testprog(/.*)?	   system_u:object_r:testprog_data_t:s0
 ```
 
-In this way we have defined a type for the executable, a configuration file type to ensure we can read the configuration file but in isolation from the test of the /etc directory, a type for the pid file as discussed in previous labs, and a type for the data directory. Note we have used a wildcard for the data directory to cover any file in there - this is an example here to show the alternative syntax and the regular expression style syntax that does in the fc file.
+In this way we have defined a type for the executable, a configuration file type to ensure we can read the configuration file but in isolation from the test of the `/etc` directory, a type for the pid file as discussed in previous labs, and a type for the data directory. Note we have used a wildcard for the data directory to cover any file in there - this is an example here to show the alternative syntax and the regular expression style syntax that does in the `fc` file.
 
-Now that we have this created we can build the policy. Build on our previous policy from earlier, and the reference code we have taken from the **ntp** policy, testprog's policy should look something like this:
+Now that we have this created we can build the policy. Building on our previous policy from earlier, and the reference code we have taken from the `ntp` policy, `testprog`'s policy should look something like this:
 
 ```
 [james@selinux-dev2 selinux-testprog]$ cat testprog.te
@@ -53,7 +53,7 @@ files_type(testprog_data_t);
 # Allow the testprog_t type under the unconfined_r role
 role unconfined_r types testprog_t;
 
-# Tell SELinux that testprog_exec_t is an entrypoint to the tetprog_t domain
+# Tell SELinux that testprog_exec_t is an entrypoint to the testprog_t domain
 allow testprog_t testprog_exec_t : file { ioctl read getattr lock execute execute_no_trans entrypoint open } ;
 # Make the type transition from unconfined_t (i.e. user shell) to testprog_t
 type_transition unconfined_t testprog_exec_t : process testprog_t;
@@ -80,21 +80,21 @@ manage_files_pattern(testprog_t, testprog_var_run_t, testprog_var_run_t)
 files_pid_filetrans(testprog_t, testprog_var_run_t, file)
 ```
 
-This as you'll see is an amalgamation of our previous context transition policy, rules from the **ntp.te** policy file, and a set of individually created rules that were derived from the audit log and sealert. In cases where rules were taken from the audit log the process of development was sometimes iterative, allowing one permission only to find a subsequent one was missing.
+This as you'll see is an amalgamation of our previous context transition policy, rules from the `ntp.te` policy file, and a set of individually created rules that were derived from the audit log and `sealert`. In cases where rules were taken from the audit log the process of development was sometimes iterative, allowing one permission only to find a subsequent one was missing.
 
-Take for example the **testprog_data_t:file** rule - the initial AVC denial was for the **open** operation on our data file. This results in a rule like:
+Take for example the `testprog_data_t:file` rule - the initial AVC denial was for the `open` operation on our data file. This results in a rule like:
 
 ```
 allow testprog_t testprog_data_t:file open;
 ```
 
-However once **open** was allowed and the new policy installed and testprog run again, it was found that testprog could not append to the file. Thus over several iterations of testing we ended up with:
+However once `open` was allowed and the new policy installed and `testprog` run again, it was found that `testprog` could not append to the open file. Thus over several iterations of testing we ended up with:
 
 ```
 allow testprog_t testprog_data_t:file { create open write append getattr };
 ```
 
-This includes both the case where the data file does not exist so has to have the **create** and **write** permissions, as well as when it does and so needs the **open** and **append** permissions. The **getattr** permission is needed to look up the file when it exists before it is opened and written to.
+This includes both the case where the data file does not exist so has to have the `create` and `write` permissions, as well as when it does and so needs the `open` and `append` permissions. The `getattr` permission is needed to look up the file when it exists before it is opened and written to.
 
 Let's try building, installing and then testing the policy:
 
@@ -149,5 +149,3 @@ Now we've made huge progress - our application is working again, only this time 
 
 1. Move `/usr/bin/testprog` to a new location or place, check the file context (hint: it should inherit from the parent directory) and try running it. See if it runs and check `audit.log`.
 2. Change one of the config files, or the output directory in the config file and see what happens. Play about with new contexts using `chcon` as discussed previously.
-
-

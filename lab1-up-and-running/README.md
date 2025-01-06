@@ -12,7 +12,7 @@ It is recommended you run these labs on a system that is not mission critical, a
 
 All labs were created and tested on a system resulting from a **Minimal Install** of RHEL 7 so depending on your installation you may find you already have packages installed that you are asked to install in these labs. That is fine. Just ignore the **yum install** steps in those cases.
 
-Your test system must be capable of running in SELinux enforcing mode. The labs at the time of writing are designed to demonstrate the **targeted** SELinux policy that comes as default on most EL7 systems. To check this, run the following command and check that the output matches that shown below:
+Your test system must be capable of running in SELinux enforcing mode. The labs at the time of writing are designed to demonstrate the **targeted** SELinux policy that comes as default on most EL7 systems. To check this, run the following command and check that the output is similar to that shown below:
 
 ```
 [james@selinux-dev ~]$ sestatus
@@ -24,9 +24,10 @@ Current mode:                   enforcing
 Mode from config file:          enforcing
 Policy MLS status:              enabled
 Policy deny_unknown status:     allowed
-Max kernel policy version:      28
+Memory protection checking:     actual (secure)
+Max kernel policy version:      33
 ```
-Of the output shown above, the following pieces are of interest to us:
+Specifically, of the output shown above, the following aspects are of interest to us:
 
 * The **SELinux status** which is **enabled**
 * The **Loaded policy name** which is **targeted**
@@ -41,12 +42,12 @@ As we go through the labs, we will install additional packages as required so yo
 Finally, if you're reading this on github.com, clone the repository to ensure you have all the code locally:
 
 ```
-[james@selinux-dev2 ~]$ sudo yum -y install git
+[james@selinux-dev ~]$ sudo dnf -y install git
 ...
 <output truncated>
 ...
-[james@selinux-dev2 ~]$ git clone https://github.com/jamesfreeman959/selinux-testprog.git
-Cloning into 'selinux-testprog'...
+[james@selinux-dev2 ~]$ git clone https://github.com/jamesfreeman959/selinux-hands-on-labs.git
+Cloning into 'selinux-hands-on-labs'...
 ...
 <output truncated>
 ...
