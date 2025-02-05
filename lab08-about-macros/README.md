@@ -7,7 +7,7 @@ Here's a disection of the ntp policy file, showing the parts that are relevant t
 First off, is there a file context specifically for the PID file so that, per our previous desire, we can isolate this file and allow our confined application to write this file, but not everything else in that directory (remember our .fc file from before?)? Remember to change into the directory where we found the `ntp` policy files in the previous lab!
 
 ```
-[james@selinux-dev serefpolicy-contrib-3.13.1]cd ~/refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/policy/modules/contrib/
+[james@selinux-dev selinux-hands-on-labs ]$ cd refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/policy/modules/contrib/
 [james@selinux-dev contrib]$ grep pid ntp.fc
 /var/run/ntpd\.pid	--	gen_context(system_u:object_r:ntpd_var_run_t,s0)
 ```
@@ -52,7 +52,7 @@ Thus you can download and use these as follows:
 100  2228  100  2228    0     0  14191      0 --:--:-- --:--:-- --:--:-- 14191
 
 [james@selinux-dev selinux-hands-on-labs]$ source selinux-funcs-el9.txt
-[james@selinux-dev selinux-hands-on-labs]$ export POLICY_LOCATION=$HOME/refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/
+[james@selinux-dev selinux-hands-on-labs]$ export POLICY_LOCATION=$HOME/selinux-hands-on-labs/refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/
 [james@selinux-dev selinux-hands-on-labs]$ seshowif files_pid_filetrans
 interface(`files_pid_filetrans',`
         gen_require(`
