@@ -127,7 +127,7 @@ This is an identity known to the SELinux policy that is mapped to users on the s
 
 You can see the user mappings by installing and running the `semanage` tool:
 ```
-[james@selinux-dev selinux-hands-on-labs]$ sudo sudo dnf -y install setools-console
+[james@selinux-dev selinux-hands-on-labs]$ sudo dnf -y install setools-console
 ...
 <output truncated>
 ...
