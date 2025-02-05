@@ -9,7 +9,7 @@ To do this we need to write a simple SELinux policy. I will leave reading the do
 ```
 [james@selinux-dev selinux-hands-on-labs]$ sudo dnf -y install selinux-policy-devel
 ...
-[james@selinux-dev selinux-hands-on-labs]$ cd lab4-targeting-testprog/
+[james@selinux-dev selinux-hands-on-labs]$ cd lab04-targeting-testprog/
 [james@selinux-dev lab4-targeting-testprog]$ make -f /usr/share/selinux/devel/Makefile testprog.pp
 Compiling targeted testprog module
 /usr/bin/checkmodule:  loading policy configuration from tmp/testprog.tmp
@@ -73,5 +73,3 @@ unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 root 12094 12090  0 17:31 
 ```
 
 **Something is wrong** - it's still working in the unconfined space. Proceed to Lab 5 to find out why and what to do...
-
-
