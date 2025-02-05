@@ -7,7 +7,9 @@ Now it's time to put all this together and build a working policy to enable us t
 /usr/bin/testprog	-- system_u:object_r:testprog_exec_t:s0
 /etc/testprog.conf	-- system_u:object_r:testprog_conf_t:s0
 /var/run/testprog.pid	-- system_u:object_r:testprog_var_run_t:s0
+/run/testprog.pid	-- system_u:object_r:testprog_var_run_t:s0
 /var/testprog(/.*)?	   system_u:object_r:testprog_data_t:s0
+
 ```
 
 In this way we have defined a type for the executable, a configuration file type to ensure we can read the configuration file but in isolation from the test of the `/etc` directory, a type for the pid file as discussed in previous labs, and a type for the data directory. Note we have used a wildcard for the data directory to cover any file in there - this is an example here to show the alternative syntax and the regular expression style syntax that does in the `fc` file.
