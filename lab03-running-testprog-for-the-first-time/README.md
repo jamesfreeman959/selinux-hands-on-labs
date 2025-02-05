@@ -43,7 +43,7 @@ abcdefghij^C
 Normally SELinux Enforcing mode strikes fear into people - otherwise they wouldn't turn it off when it comes to running bespoke applications. So the natural question here is, if SELinux is in **Enforcing** mode, Why did this work? Let's look at the process table:
 
 ```
-[james@selinux-dev selinux-hands-on-labs]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev selinux-hands-on-labs]$ ps -fZp $(cat /var/run/testprog.pid)
 unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 root 11666 11665  0 16:04 pts/0 00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ```
 
@@ -109,7 +109,7 @@ Sep 07 16:17:04 selinux-dev testprog[11695]: Iteration count: -1
 Once again it's working! However note this time:
 
 ```
-[james@selinux-dev selinux-hands-on-labs]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev selinux-hands-on-labs]$ ps -fZp $(cat /var/run/testprog.pid)
 system_u:system_r:unconfined_service_t:s0 root 11695 1  0 16:17 ?        00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ```
 
@@ -204,10 +204,10 @@ Using configuration file: /etc/testprog.conf
 Wrote PID to /var/run/testprog.pid
 Writing output to: /var/testprog/testprg.txt
 Iteration count: -1
-[james@selinux-dev selinux-hands-on-labs]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev selinux-hands-on-labs]$ ps -fZp $(cat /var/run/testprog.pid)
 unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 root 11819 11818  0 16:49 pts/0 00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ...
-[james@selinux-dev selinux-hands-on-labs]$ ps -efZ | grep 11818
+[james@selinux-dev selinux-hands-on-labs]$ ps -fZp 11818
 unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 root 11818 1221  0 16:49 pts/0 00:00:00 sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ...
 [james@selinux-dev selinux-hands-on-labs]$ ps -efZ | grep bash
@@ -222,7 +222,7 @@ And through systemd:
 sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ^C
 [james@selinux-dev selinux-hands-on-labs]$ sudo systemctl start testprog
-[james@selinux-dev selinux-hands-on-labs]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev selinux-hands-on-labs]$ ps -fZp $(cat /var/run/testprog.pid)
 system_u:system_r:unconfined_service_t:s0 root 11836 1  0 16:53 ?        00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ...
 [james@selinux-dev selinux-hands-on-labs]$ ps -efZ | grep systemd
