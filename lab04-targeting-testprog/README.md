@@ -68,7 +68,7 @@ Using configuration file: /etc/testprog.conf
 Wrote PID to /var/run/testprog.pid
 Writing output to: /var/testprog/testprg.txt
 Iteration count: -1
-[james@selinux-dev lab04-targeting-testprog]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev lab04-targeting-testprog]$ ps -fZwwp $(cat /var/run/testprog.pid)
 unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 root 12094 12090  0 17:31 pts/0 00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ```
 
