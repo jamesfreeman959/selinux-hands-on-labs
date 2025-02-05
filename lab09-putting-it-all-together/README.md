@@ -129,7 +129,7 @@ Wrote PID to /var/run/testprog.pid
 Writing output to: /var/testprog/testprg.txt
 Iteration count: -1
 
-[james@selinux-dev2 lab09-putting-it-all-together]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev2 lab09-putting-it-all-together]$ ps -fZwwp $(cat /var/run/testprog.pid)
 unconfined_u:unconfined_r:testprog_t:s0-s0:c0.c1023 root 26349 26348  0 15:08 pts/0 00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 
 [james@selinux-dev2 lab09-putting-it-all-together]$ tail -f /var/testprog/testprg.txt
