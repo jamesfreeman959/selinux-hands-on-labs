@@ -123,7 +123,7 @@ Jan 05 22:21:20 selinux-rocky9 testprog[15323]: Wrote PID to /var/run/testprog.p
 Jan 05 22:21:20 selinux-rocky9 testprog[15323]: Writing output to: /var/testprog/testprg.txt
 Jan 05 22:21:20 selinux-rocky9 testprog[15323]: Iteration count: -1
 
-[james@selinux-dev lab10-systemd]$ ps -efZ | grep testprog
+[james@selinux-dev lab10-systemd]$ ps -fZwwp $(cat /var/run/testprog.pid)
 system_u:system_r:testprog_t:s0 root      26513      1  0 15:34 ?        00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 
 ```
