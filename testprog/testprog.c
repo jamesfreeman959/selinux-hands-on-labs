@@ -13,7 +13,6 @@
  */
 
 #include <stdio.h>
-#include <sys/io.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <string.h>
