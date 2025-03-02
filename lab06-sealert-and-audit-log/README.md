@@ -99,11 +99,6 @@ To make this policy package active, execute:
 
 semodule -i my-testprog.pp
 
-******************** IMPORTANT ***********************
-To make this policy package active, execute:
-
-semodule -i my-testprog.pp
-
 [james@selinux-dev selinux-hands-on-labs]$ cat my-testprog.te
 
 module my-testprog 1.0;
