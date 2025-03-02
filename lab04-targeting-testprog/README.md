@@ -9,28 +9,28 @@ To do this we need to write a simple SELinux policy. I will leave reading the do
 ```
 [james@selinux-dev selinux-hands-on-labs]$ sudo dnf -y install selinux-policy-devel
 ...
-[james@selinux-dev selinux-hands-on-labs]$ cd lab4-targeting-testprog/
-[james@selinux-dev lab4-targeting-testprog]$ make -f /usr/share/selinux/devel/Makefile testprog.pp
+[james@selinux-dev selinux-hands-on-labs]$ cd lab04-targeting-testprog/
+[james@selinux-dev lab04-targeting-testprog]$ make -f /usr/share/selinux/devel/Makefile testprog.pp
 Compiling targeted testprog module
 /usr/bin/checkmodule:  loading policy configuration from tmp/testprog.tmp
 /usr/bin/checkmodule:  policy configuration loaded
 /usr/bin/checkmodule:  writing binary representation (version 17) to tmp/testprog.mod
 Creating targeted testprog.pp policy package
 rm tmp/testprog.mod tmp/testprog.mod.fc
-[james@selinux-dev lab4-targeting-testprog]$ sudo semodule -i testprog.pp
+[james@selinux-dev lab04-targeting-testprog]$ sudo semodule -i testprog.pp
 ```
 
 We can check that the policy module is now loaded:
 
 ```
-[james@selinux-dev lab4-targeting-testprog]$ sudo semodule -l | grep testprog
+[james@selinux-dev lab04-targeting-testprog]$ sudo semodule -l | grep testprog
 testprog
 ```
 
 Good - now what does the module do? Let's take a look at it:
 
 ```
-[james@selinux-dev lab4-targeting-testprog]$ grep -v -e ^# testprog.te
+[james@selinux-dev lab04-targeting-testprog]$ grep -v -e ^# testprog.te
 policy_module(testprog, 0.1)
 
 require {
@@ -62,13 +62,13 @@ First off we're giving our module a name and version number so that it is easily
 Now our policy is loaded so let's see what happens when we run from the shell:
 
 ```
-[james@selinux-dev lab4-targeting-testprog]$ sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid &
+[james@selinux-dev lab04-targeting-testprog]$ sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid &
 [1] 12090
 Using configuration file: /etc/testprog.conf
 Wrote PID to /var/run/testprog.pid
 Writing output to: /var/testprog/testprg.txt
 Iteration count: -1
-[james@selinux-dev lab4-targeting-testprog]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev lab04-targeting-testprog]$ ps -fZwwp $(cat /var/run/testprog.pid)
 unconfined_u:unconfined_r:unconfined_t:s0-s0:c0.c1023 root 12094 12090  0 17:31 pts/0 00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ```
 
