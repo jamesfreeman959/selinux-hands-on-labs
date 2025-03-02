@@ -40,12 +40,10 @@ We already know from earlier labs that `systemd` launches processes in a differe
 Now we have already seen from our earlier lab that we can create a manual transition from one domain to another. We have also seen, however, that most common SELinux permissions have already been defined for us in the reference policy. Rather than adding multiple lines of code to create a second type transition, it seems fair to surmise that someone has already done this for us. As before, let's pick on an example SELinux policy that we know does what we want already (again I will use `ntp` here). If we examine the policy definition we can see:
 
 ```
-[james@selinux-dev lab10-systemd]$ cat ~/refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/policy/modules/contrib/ntp.te
-...
+[james@selinux-dev lab10-systemd]$ grep -A2 '^type ntpd_t;' ../refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/policy/modules/contrib/ntp.te
 type ntpd_t;
 type ntpd_exec_t;
 init_daemon_domain(ntpd_t, ntpd_exec_t)
-...
 ```
 
 Just from the name, that piece of code looks useful, so let's use our SELinux functions we downloaded previously to examine it:
@@ -125,7 +123,7 @@ Jan 05 22:21:20 selinux-rocky9 testprog[15323]: Wrote PID to /var/run/testprog.p
 Jan 05 22:21:20 selinux-rocky9 testprog[15323]: Writing output to: /var/testprog/testprg.txt
 Jan 05 22:21:20 selinux-rocky9 testprog[15323]: Iteration count: -1
 
-[james@selinux-dev lab10-systemd]$ ps -efZ | grep testprog
+[james@selinux-dev lab10-systemd]$ ps -fZwwp $(cat /var/run/testprog.pid)
 system_u:system_r:testprog_t:s0 root      26513      1  0 15:34 ?        00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 
 ```
