@@ -233,7 +233,7 @@ system_u:system_r:init_t:s0     root          1      0  0 14:45 ?        00:00:0
 Wait! We didn't see the `type` get inherited here. If you ever see that happen, suspect that an SELinux policy rule has made this happen. If you believe this is happening, the `sesearch` tool is your friend (it will have been installed alongside `seinfo` but just in case, the installation command is below):
 
 ```
-[james@selinux-dev selinux-hands-on-labs]$ sudo dnf -y install setools-consle
+[james@selinux-dev selinux-hands-on-labs]$ sudo dnf -y install setools-console
 ...
 [james@selinux-dev selinux-hands-on-labs]$ sesearch -s init_t -t unconfined_service_t -A -ds -dt
 ...
