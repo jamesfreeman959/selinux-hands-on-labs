@@ -3,9 +3,9 @@
 We know from before that looking at the policy for the NTP daemon helped us immensely in moving forwards with our policy for `testprog`. However we also know that `ntpd` relies primarily on UDP for its communications, and our appliation is TCP based. As a result we'll focus on another example - here I have picked the ssh daemon policy module (aptly named `ssh.te`). If you read through the policy file, you'll come across this section somewhere near the middle of the file:
 
 ```
-[james@selinux-dev selinux-hands-on-labs]$ find ~ -name ssh.te
-/home/jamesf_local/refpolicy/selinux-policy-0d528aef37153a0bcf9cdd987a32b1ccf0da7068/policy/modules/services/ssh.te
-[james@selinux-dev selinux-hands-on-labs]$ less /home/jamesf_local/refpolicy/selinux-policy-0d528aef37153a0bcf9cdd987a32b1ccf0da7068/policy/modules/services/ssh.te
+[james@selinux-dev selinux-hands-on-labs]$ find . -name ssh.te
+./refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/policy/modules/services/ssh.te
+[james@selinux-dev selinux-hands-on-labs]$ less ./refpolicy/selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c/policy/modules/services/ssh.te
 ...
 allow ssh_t self:tcp_socket create_stream_socket_perms;
 ...
