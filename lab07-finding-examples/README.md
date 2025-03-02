@@ -82,6 +82,8 @@ Once you have a copy of the rpm extract the contents or install it as you prefer
 [james@selinux-dev selinux-hands-on-labs]$ cd refpolicy/
 [james@selinux-dev refpolicy]$ rpm2cpio ../selinux-policy-38.1.45-3.el9_5.src.rpm | cpio -idm
 2456 blocks
+[james@selinux-dev refpolicy]$ sudo dnf -y install tar
+..output truncated..
 [james@selinux-dev refpolicy]$ for tarball in *.tgz *.tar.gz; do tar -xzf $tarball; done
 [james@selinux-dev refpolicy]$ cd selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c
 [james@selinux-dev selinux-policy-0113b35519369e628e7fcd87af000cfcd4b1fa6c]$ find . -type f -name 'ntp.*'
