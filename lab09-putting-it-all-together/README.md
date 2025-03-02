@@ -3,11 +3,13 @@
 Now it's time to put all this together and build a working policy to enable us to run `testprog` from the shell. First of all we shall decide what contexts to put the files and directories into as we shall build the policy around that. To follow the practise used for other applications on EL7 (including our reference policy `ntp`) our file contexts will look like this:
 
 ```
-[root@selinux-dev lab9-putting-it-all-together]# cat testprog.fc
+[root@selinux-dev lab09-putting-it-all-together]# cat testprog.fc
 /usr/bin/testprog	-- system_u:object_r:testprog_exec_t:s0
 /etc/testprog.conf	-- system_u:object_r:testprog_conf_t:s0
 /var/run/testprog.pid	-- system_u:object_r:testprog_var_run_t:s0
+/run/testprog.pid	-- system_u:object_r:testprog_var_run_t:s0
 /var/testprog(/.*)?	   system_u:object_r:testprog_data_t:s0
+
 ```
 
 In this way we have defined a type for the executable, a configuration file type to ensure we can read the configuration file but in isolation from the test of the `/etc` directory, a type for the pid file as discussed in previous labs, and a type for the data directory. Note we have used a wildcard for the data directory to cover any file in there - this is an example here to show the alternative syntax and the regular expression style syntax that does in the `fc` file.
@@ -99,7 +101,7 @@ This includes both the case where the data file does not exist so has to have th
 Let's try building, installing and then testing the policy:
 
 ```
-[james@selinux-dev2 lab9-putting-it-all-together]$ make -f /usr/share/selinux/devel/Makefile testprog.pp
+[james@selinux-dev2 lab09-putting-it-all-together]$ make -f /usr/share/selinux/devel/Makefile testprog.pp
 Compiling targeted testprog module
 /usr/bin/checkmodule:  loading policy configuration from tmp/testprog.tmp
 /usr/bin/checkmodule:  policy configuration loaded
@@ -107,30 +109,30 @@ Compiling targeted testprog module
 Creating targeted testprog.pp policy package
 rm tmp/testprog.mod tmp/testprog.mod.fc
 
-[james@selinux-dev2 lab9-putting-it-all-together]$ sudo semodule -r testprog 
+[james@selinux-dev2 lab09-putting-it-all-together]$ sudo semodule -r testprog
 libsemanage.semanage_direct_remove_key: Removing last testprog module (no other testprog module exists at another priority)
 
-[james@selinux-dev2 lab9-putting-it-all-together]$ sudo semodule -i testprog.pp
+[james@selinux-dev2 lab09-putting-it-all-together]$ sudo semodule -i testprog.pp
 
-[james@selinux-dev2 lab9-putting-it-all-together]$ sudo restorecon -v /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
+[james@selinux-dev2 lab09-putting-it-all-together]$ sudo restorecon -v /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 restorecon reset /etc/testprog.conf context unconfined_u:object_r:etc_t:s0->unconfined_u:object_r:testprog_conf_t:s0
 restorecon reset /run/testprog.pid context unconfined_u:object_r:var_run_t:s0->unconfined_u:object_r:testprog_var_run_t:s0
 
-[james@selinux-dev2 lab9-putting-it-all-together]$ sudo restorecon -rv /var/testprog
+[james@selinux-dev2 lab09-putting-it-all-together]$ sudo restorecon -rv /var/testprog
 restorecon reset /var/testprog context unconfined_u:object_r:var_t:s0->unconfined_u:object_r:testprog_data_t:s0
 restorecon reset /var/testprog/testprg.txt context unconfined_u:object_r:var_t:s0->unconfined_u:object_r:testprog_data_t:s0
 
-[james@selinux-dev2 lab9-putting-it-all-together]$ sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid &
+[james@selinux-dev2 lab09-putting-it-all-together]$ sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid &
 [1] 26348
 Using configuration file: /etc/testprog.conf
 Wrote PID to /var/run/testprog.pid
 Writing output to: /var/testprog/testprg.txt
 Iteration count: -1
 
-[james@selinux-dev2 lab9-putting-it-all-together]$ ps -efZ | grep $(cat /var/run/testprog.pid)
+[james@selinux-dev2 lab09-putting-it-all-together]$ ps -fZwwp $(cat /var/run/testprog.pid)
 unconfined_u:unconfined_r:testprog_t:s0-s0:c0.c1023 root 26349 26348  0 15:08 pts/0 00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 
-[james@selinux-dev2 lab9-putting-it-all-together]$ tail -f /var/testprog/testprg.txt
+[james@selinux-dev2 lab09-putting-it-all-together]$ tail -f /var/testprog/testprg.txt
 Hello World
 abcdefghij
 Hello World
