@@ -21,7 +21,7 @@ dr-xr-xr-x. root root system_u:object_r:bin_t:s0       /usr/bin
 restorecon reset /usr/bin/testprog context unconfined_u:object_r:testprog_exec_t:s0->unconfined_u:object_r:bin_t:s0
 ```
 
-Obviously if this were to happen on a live server it would break you application the next time it was launched - clearly not good. As a result we must declare the file context as part of the policy we have created. In addition to the `testprog.te` file which remains unchanged in this lab, we no introduce `testprog.fc`:
+Obviously if this were to happen on a live server it would break your application the next time it was launched - clearly not good. As a result, we must declare the file context as part of the policy we have created. In addition to the `testprog.te` file which remains unchanged in this lab, we now introduce `testprog.fc`:
 
 ```
 [james@selinux-dev lab05-file-contexts]$ cat testprog.fc
@@ -43,7 +43,7 @@ libsemanage.semanage_direct_remove_key: Removing last testprog module (no other 
 [james@selinux-dev lab05-file-contexts]$ sudo semodule -i testprog.pp
 ```
 
-Normally you wouldn't need to remove the old module first, but we are being lazy here and haven't bumped up the version number in the head of the policy file, so we are taking this opportunity to demonstrate the removal and install of a module.
+Normally you wouldn't need to remove the old module first, but we are being lazy here and haven't bumped up the version number in the head of the policy file, so we are taking this opportunity to demonstrate the removal and installation of a module.
 
 We should now have a default context installed for our binary file - let's test it:
 
