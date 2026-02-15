@@ -56,21 +56,28 @@ struct config get_config(char *filename)
 		{
 				char *cfline;
 				cfline = strstr((char *)line,DELIM);
-				if (cfline == NULL)				{
+				if (cfline == NULL)
+				{
 					i++;
 					continue;
 				}
-				 /*Guarding clause for strstr returning null in case Delimeter '=' is not in config file.
-				 Earlier we were simply adding 1 to NULL, potentially leading to install crash. 
-				 Now we would simply skip the lines that don't have '=' delimeter. 
+				 /*Guarding clause for strstr returning null in case DELIM, '=' is not in config file.
+				 Earlier we were simply adding 1 to NULL, potentially leading to instant crash. 
+				 Now we would simply skip the lines that don't have '=' delimiter. 
 				 */
 				cfline = cfline + strlen(DELIM);
 
+				size_t copy_len = strlen(cfline); //Used twice later, better to call only once.
+				if (copy_len >= MAXBUF)
+						copy_len = MAXBUF - 1;  // Preventing buffer overflow in case cfline is > 1024
+
 				if (i == 0){
-						memcpy(configstruct.outputfile,cfline,strlen(cfline));
+						memcpy(configstruct.outputfile,cfline,copy_len);
+						configstruct.outputfile[copy_len] = '\0'; //Null-terminate the string
 						//printf("%s",configstruct.outputfile);
 				} else if (i == 1){
-						memcpy(configstruct.loopcount,cfline,strlen(cfline));
+						memcpy(configstruct.loopcount,cfline,copy_len);
+						configstruct.loopcount[copy_len] = '\0'; //Null-terminate the string
 						//printf("%s",configstruct.loopcount);
 				}
 				
