@@ -34,6 +34,12 @@ struct config
 struct config get_config(char *filename)
 {
         struct config configstruct;
+		memset(&configstruct, 0, sizeof(configstruct));
+        /* Local variables are not initialized automatically, if function fails to open or
+        the config has fewer than 2 lines, configstruct.outputfile or configstruct.loopcount 
+        would contain whatever garbage was on the stack. memset here fills the entire struct
+        with zeros, so even on failure, the function call gets an empty string instead of 
+        unpredictable garbage memory.*/
         FILE *file = fopen (filename, "r");
 
         if (file != NULL)
