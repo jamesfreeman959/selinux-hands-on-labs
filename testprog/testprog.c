@@ -166,10 +166,11 @@ int main(int argc, char *argv[] )
 	while(keep_running && (i < x || x < 0))
 	{
 		FILE *file = fopen(configstruct.outputfile, "a");
-		fputs("\nHello World",file);
-		fputs(s,file);
-
-		fclose(file);
+		if (file != NULL) {
+			fputs("\nHello World",file);
+			fputs(s,file);
+			fclose(file);
+		}
 		sleep(1);
 
 		i++;
