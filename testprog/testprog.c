@@ -17,7 +17,18 @@
 #include <unistd.h>
 #include <string.h>
 #include <syslog.h>
+#include <signal.h>
 char s[11] = {"\nabcdefghij"};
+volatile sig_atomic_t keep_running = 1;
+/* volatile ensures compiler reads it every time instead of caching the value for mem optimization
+sig_atomic_t is a special integer type in signal.h. Guarantess read/write atomically (the CPU can
+update it in single instruction )
+*/
+void handle_signal(int sig)
+{
+	(void)sig; // For unused variable warning, avoiding printing of signal for code safety reasons
+	keep_running = 0;
+}
 
 #define FILENAME "testprog.conf"
 #define MAXBUF 1024
@@ -97,6 +108,8 @@ int main(int argc, char *argv[] )
 
 	setlogmask (LOG_UPTO (LOG_NOTICE));
 	openlog ("testprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);       
+	signal(SIGINT, handle_signal);
+	signal(SIGTERM, handle_signal);
 
 	char *config_path = FILENAME;
 	char *pid_path  = PIDFILE;
@@ -155,7 +168,7 @@ int main(int argc, char *argv[] )
 	syslog (LOG_NOTICE, "Iteration count: %d\n",x);
 
 	int i = 0;
-	while(i < x || x < 0)
+	while(keep_running && (i < x || x < 0))
 	{
 		FILE *file = fopen(configstruct.outputfile, "a");
 		fputs("\nHello World",file);
