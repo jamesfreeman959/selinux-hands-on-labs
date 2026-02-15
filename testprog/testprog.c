@@ -42,28 +42,40 @@ struct config get_config(char *filename)
         unpredictable garbage memory.*/
         FILE *file = fopen (filename, "r");
 
-        if (file != NULL)
+        if (file == NULL)
         {
-                char line[MAXBUF];
-                int i = 0;
+			printf("Could not open config file: %s\n", filename);
+			syslog(LOG_CRIT, "Could not open config file: %s\n", filename);
+			return configstruct;
+		} // Converted to a guarding clause for better readability(flattens the nesting) and early return
 
-                while(fgets(line, sizeof(line), file) != NULL)
-                {
-                        char *cfline;
-                        cfline = strstr((char *)line,DELIM);
-                        cfline = cfline + strlen(DELIM);
-   
-                        if (i == 0){
-                                memcpy(configstruct.outputfile,cfline,strlen(cfline));
-                                //printf("%s",configstruct.outputfile);
-                        } else if (i == 1){
-                                memcpy(configstruct.loopcount,cfline,strlen(cfline));
-                                //printf("%s",configstruct.loopcount);
-                        }
-                       
-                        i++;
-                } // End while
-        } // End if file
+        char line[MAXBUF];
+        int i = 0;
+
+		while(fgets(line, sizeof(line), file) != NULL)
+		{
+				char *cfline;
+				cfline = strstr((char *)line,DELIM);
+				if (cfline == NULL)				{
+					i++;
+					continue;
+				}
+				 /*Guarding clause for strstr returning null in case Delimeter '=' is not in config file.
+				 Earlier we were simply adding 1 to NULL, potentially leading to install crash. 
+				 Now we would simply skip the lines that don't have '=' delimeter. 
+				 */
+				cfline = cfline + strlen(DELIM);
+
+				if (i == 0){
+						memcpy(configstruct.outputfile,cfline,strlen(cfline));
+						//printf("%s",configstruct.outputfile);
+				} else if (i == 1){
+						memcpy(configstruct.loopcount,cfline,strlen(cfline));
+						//printf("%s",configstruct.loopcount);
+				}
+				
+				i++;
+		} // End while
        
                
         fclose(file);
