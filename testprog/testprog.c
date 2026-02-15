@@ -37,77 +37,74 @@ void handle_signal(int sig)
 
 struct config
 {
-   char outputfile[MAXBUF];
-   char loopcount[MAXBUF];
+	char outputfile[MAXBUF];
+	char loopcount[MAXBUF];
 };
 
 
 struct config get_config(char *filename)
 {
-        struct config configstruct;
-		memset(&configstruct, 0, sizeof(configstruct));
-        /* Local variables are not initialized automatically, if function fails to open or
-        the config has fewer than 2 lines, configstruct.outputfile or configstruct.loopcount 
-        would contain whatever garbage was on the stack. memset here fills the entire struct
-        with zeros, so even on failure, the function call gets an empty string instead of 
-        unpredictable garbage memory.*/
-        FILE *file = fopen (filename, "r");
+	struct config configstruct;
+	memset(&configstruct, 0, sizeof(configstruct));
+	/* Local variables are not initialized automatically, if function fails to open or
+	the config has fewer than 2 lines, configstruct.outputfile or configstruct.loopcount 
+	would contain whatever garbage was on the stack. memset here fills the entire struct
+	with zeros, so even on failure, the function call gets an empty string instead of 
+	unpredictable garbage memory.*/
+	FILE *file = fopen (filename, "r");
 
-        if (file == NULL)
-        {
-			printf("Could not open config file: %s\n", filename);
-			syslog(LOG_CRIT, "Could not open config file: %s\n", filename);
-			return configstruct;
-		} // Converted to a guarding clause for better readability(flattens the nesting) and early return
+	if (file == NULL)
+	{
+		printf("Could not open config file: %s\n", filename);
+		syslog(LOG_CRIT, "Could not open config file: %s\n", filename);
+		return configstruct;
+	} // Converted to a guarding clause for better readability(flattens the nesting) and early return
 
-        char line[MAXBUF];
-        int i = 0;
+	char line[MAXBUF];
+	int i = 0;
 
-		while(fgets(line, sizeof(line), file) != NULL)
+	while(fgets(line, sizeof(line), file) != NULL)
+	{
+		char *cfline;
+		cfline = strstr((char *)line,DELIM);
+		if (cfline == NULL)
 		{
-				char *cfline;
-				cfline = strstr((char *)line,DELIM);
-				if (cfline == NULL)
-				{
-					i++;
-					continue;
-				}
-				 /*Guarding clause for strstr returning null in case DELIM, '=' is not in config file.
-				 Earlier we were simply adding 1 to NULL, potentially leading to instant crash. 
-				 Now we would simply skip the lines that don't have '=' delimiter. 
-				 */
-				cfline = cfline + strlen(DELIM);
+			i++;
+			continue;
+		}
+		/*Guarding clause for strstr returning null in case DELIM, '=' is not in config file.
+		Earlier we were simply adding 1 to NULL, potentially leading to instant crash. 
+		Now we would simply skip the lines that don't have '=' delimiter. 
+		*/
+		cfline = cfline + strlen(DELIM);
 
-				size_t copy_len = strlen(cfline); //Used twice later, better to call only once.
-				if (copy_len >= MAXBUF)
-						copy_len = MAXBUF - 1;  // Preventing buffer overflow in case cfline is > 1024
+		size_t copy_len = strlen(cfline); //Used twice later, better to call only once.
+		if (copy_len >= MAXBUF)
+				copy_len = MAXBUF - 1;  // Preventing buffer overflow in case cfline is > 1024
 
-				if (i == 0){
-						memcpy(configstruct.outputfile,cfline,copy_len);
-						configstruct.outputfile[copy_len] = '\0'; //Null-terminate the string
-						//printf("%s",configstruct.outputfile);
-				} else if (i == 1){
-						memcpy(configstruct.loopcount,cfline,copy_len);
-						configstruct.loopcount[copy_len] = '\0'; //Null-terminate the string
-						//printf("%s",configstruct.loopcount);
-				}
-				
-				i++;
-		} // End while
-       
-               
-        fclose(file);
-       
-        return configstruct;
+		if (i == 0){
+				memcpy(configstruct.outputfile,cfline,copy_len);
+				configstruct.outputfile[copy_len] = '\0'; //Null-terminate the string
+				//printf("%s",configstruct.outputfile);
+		} else if (i == 1){
+				memcpy(configstruct.loopcount,cfline,copy_len);
+				configstruct.loopcount[copy_len] = '\0'; //Null-terminate the string
+				//printf("%s",configstruct.loopcount);
+		}
 
+		i++;
+	} // End while
+
+	fclose(file);
+	return configstruct;
 }
 
 int main(int argc, char *argv[] )
 {
-        struct config configstruct;
+	struct config configstruct;
 
 	setlogmask (LOG_UPTO (LOG_NOTICE));
-	openlog ("testprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);       
+	openlog ("testprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);
 	signal(SIGINT, handle_signal);
 	signal(SIGTERM, handle_signal);
 
@@ -122,7 +119,7 @@ int main(int argc, char *argv[] )
 	}
 
 	FILE *config_file = fopen( config_path, "r" );
-	
+
 	if ( config_file == NULL )
 	{
 		printf( "Could not open file: %s\n", config_path );
@@ -131,11 +128,11 @@ int main(int argc, char *argv[] )
 		return 1;
 	}
 	fclose(config_file);
-	
+
 	configstruct = get_config(config_path);
 	printf("Using configuration file: %s\n", config_path);
 	syslog (LOG_NOTICE, "Using configuration file: %s\n", config_path);
-    
+
 	FILE *pidfile = fopen( pid_path, "wb" );
 	if ( pidfile == NULL )
 	{
@@ -150,18 +147,16 @@ int main(int argc, char *argv[] )
 	syslog (LOG_NOTICE, "Wrote PID to %s\n", pid_path );
 
 
-	/* Code to trim our string and prevent bad chars in filename */
-	char* outputfilePtr = configstruct.outputfile;
+	/* Trim trailing newline/carriage return from output filename */
 	size_t len;
-	outputfilePtr += strspn(outputfilePtr, "\t\n\v\f\r ");
+	//Removed unused outputfilePtr and updated the comment above. Since it's never used anywhere.
 	len = strcspn(configstruct.outputfile, "\r\n");
 	configstruct.outputfile[len] = '\0';
 
 	printf("Writing output to: %s\n",configstruct.outputfile);
 	syslog (LOG_NOTICE, "Writing output to: %s\n",configstruct.outputfile);
-	
- 
-	/* Cast port as int */
+
+	/* Parse loop count as int */
 	int x;
 	x = atoi(configstruct.loopcount);
 	printf("Iteration count: %d\n",x);
@@ -173,12 +168,11 @@ int main(int argc, char *argv[] )
 		FILE *file = fopen(configstruct.outputfile, "a");
 		fputs("\nHello World",file);
 		fputs(s,file);
- 
+
 		fclose(file);
 		sleep(1);
 
 		i++;
-
 	}
 
 	closelog();
