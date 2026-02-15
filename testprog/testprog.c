@@ -98,45 +98,47 @@ int main(int argc, char *argv[] )
 	setlogmask (LOG_UPTO (LOG_NOTICE));
 	openlog ("testprog", LOG_CONS | LOG_PID | LOG_NDELAY, LOG_LOCAL1);       
 
-	if (argc < 2) {
-		// No arguments were passed
-        	configstruct = get_config(FILENAME);
-        	printf("Using configuration file: %s\n", FILENAME);
-		syslog (LOG_NOTICE, "Using configuration file: %s\n", FILENAME);
-		// We assume argv[2] is a pidfile to open
-		FILE *file = fopen( PIDFILE, "wb" );
-		fprintf(file, "%d\n", getpid());
-		fclose(file);
-		printf("Wrote PID to %s\n", PIDFILE );
-		syslog (LOG_NOTICE, "Wrote PID to %s\n", PIDFILE );
-	} else {
-	       	// We assume argv[1] is a config file to open
-	       	FILE *file = fopen( argv[1], "r" );
-	       
-	       	/* fopen returns 0, the NULL pointer, on failure */
-	       	if ( file == 0 )
-	       	{
-	       		printf( "Could not open file\n" );
-			syslog (LOG_CRIT, "Could not open file\n" );
-	       	}
-	       	else 
-	       	{
-			configstruct = get_config(argv[1]);
-        		printf("Using configuration file: %s\n", argv[1]);
-			syslog (LOG_NOTICE, "Using configuration file: %s\n", argv[1]);
-		}
-		fclose(file);
+	char *config_path = FILENAME;
+	char *pid_path  = PIDFILE;
 
-		// We assume argv[2] is a pidfile to open
-		FILE *pidfile = fopen( argv[2], "wb" );
-		fprintf(pidfile, "%d\n", getpid());
-		fclose(pidfile);
-		printf("Wrote PID to %s\n", argv[2] );
-		syslog (LOG_NOTICE, "Wrote PID to %s\n", argv[2] );
+	if (argc >= 2) {
+		config_path = argv[1];
+	}
+	if (argc >= 3) {
+		pid_path = argv[2];
 	}
 
+	FILE *config_file = fopen( config_path, "r" );
+	
+	if ( config_file == NULL )
+	{
+		printf( "Could not open file: %s\n", config_path );
+		syslog (LOG_CRIT, "Could not open file: %s\n", config_path );
+		closelog();
+		return 1;
+	}
+	fclose(config_file);
+	
+	configstruct = get_config(config_path);
+	printf("Using configuration file: %s\n", config_path);
+	syslog (LOG_NOTICE, "Using configuration file: %s\n", config_path);
+    
+	FILE *pidfile = fopen( pid_path, "wb" );
+	if ( pidfile == NULL )
+	{
+		printf( "Could not open PID file: %s\n", pid_path );
+		syslog (LOG_CRIT, "Could not open file: %s\n", pid_path );
+		closelog();
+		return 1;
+	}
+	fprintf(pidfile, "%d\n", getpid());
+	fclose(pidfile);
+	printf("Wrote PID to %s\n", pid_path);
+	syslog (LOG_NOTICE, "Wrote PID to %s\n", pid_path );
+
+
 	/* Code to trim our string and prevent bad chars in filename */
-      	char* outputfilePtr = configstruct.outputfile;
+	char* outputfilePtr = configstruct.outputfile;
 	size_t len;
 	outputfilePtr += strspn(outputfilePtr, "\t\n\v\f\r ");
 	len = strcspn(configstruct.outputfile, "\r\n");
@@ -146,10 +148,10 @@ int main(int argc, char *argv[] )
 	syslog (LOG_NOTICE, "Writing output to: %s\n",configstruct.outputfile);
 	
  
-        /* Cast port as int */
-        int x;
-        x = atoi(configstruct.loopcount);
-        printf("Iteration count: %d\n",x);
+	/* Cast port as int */
+	int x;
+	x = atoi(configstruct.loopcount);
+	printf("Iteration count: %d\n",x);
 	syslog (LOG_NOTICE, "Iteration count: %d\n",x);
 
 	int i = 0;
@@ -165,6 +167,7 @@ int main(int argc, char *argv[] )
 		i++;
 
 	}
- 
-return 0;
+
+	closelog();
+	return 0;
 }
