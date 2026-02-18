@@ -89,6 +89,14 @@ Now you may ask, is it more secure if you run it as a service? Let's try (don't 
 [james@selinux-dev selinux-hands-on-labs]$ fg
 sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ^C 
+```
+
+> **Note:** On newer distributions (e.g. Fedora 41+, RHEL 9+), `sudo` uses PTY mode by default, which may prevent Ctrl+C from reaching the process after `fg`. If Ctrl+C does not work, stop the process from another terminal using:
+> ```
+> sudo kill $(cat /var/run/testprog.pid)
+> ```
+
+```
 [james@selinux-dev selinux-hands-on-labs]$ sudo systemctl start testprog
 [james@selinux-dev selinux-hands-on-labs]$ sudo systemctl status testprog
 ● testprog.service - SELinux Test Program
