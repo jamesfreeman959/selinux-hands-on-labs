@@ -101,7 +101,7 @@ bind failed. Error
 Oh dear - we've failed. By now you will have guessed that SELinux also restricts access to network ports as well as files, `tty` devices and so on. This is over and above any firewall that you may or may not have running on your server - as with everything else we have explored so far it is an additional layer to the usual protections provided on a Linux system. Very that SELinux did indeed cause this:
 
 ```
-[james@selinux-dev lab14-networking]$ sudo grep testprog-net /var/log/audit/audit.log | grep AVC
+[james@selinux-dev lab14-networking]$ sudo ausearch -m AVC -c testprog-net -ts today
 type=AVC msg=audit(1736177507.491:1052): avc:  denied  { create } for  pid=16360 comm="testprog-net" scontext=unconfined_u:unconfined_r:testprog_t:s0-s0:c0.c1023 tcontext=unconfined_u:unconfined_r:testprog_t:s0-s0:c0.c1023 tclass=tcp_socket permissive=0
 ```
 

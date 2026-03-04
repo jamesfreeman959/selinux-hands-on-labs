@@ -138,7 +138,7 @@ bind failed. Error
 This fails because our program tried to access a port that it didn't have permission to bind to. We can verify this from the audit logs:
 
 ```
-[james@selinux-dev lab15-allowing-networking]$ sudo grep AVC /var/log/audit/audit.log | grep testprog
+[james@selinux-dev lab15-allowing-networking]$ sudo ausearch -m AVC -c testprog-net -ts today
 type=AVC msg=audit(1736178782.210:1394): avc:  denied  { name_bind } for  pid=16914 comm="testprog-net" src=8235 scontext=unconfined_u:unconfined_r:testprog_t:s0-s0:c0.c1023 tcontext=system_u:object_r:unreserved_port_t:s0 tclass=tcp_socket permissive=0
 ```
 
