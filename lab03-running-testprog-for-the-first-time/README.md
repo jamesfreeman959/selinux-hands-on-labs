@@ -229,6 +229,14 @@ And through systemd:
 [james@selinux-dev selinux-hands-on-labs]$ fg
 sudo /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid
 ^C
+```
+
+> **Note:** On newer distributions (e.g. Fedora 41+, RHEL 9+), `sudo` uses PTY mode by default, which may prevent Ctrl+C from reaching the process after `fg`. If Ctrl+C does not work, stop the process from another terminal using:
+> ```
+> sudo kill $(cat /var/run/testprog.pid)
+> ```
+
+```
 [james@selinux-dev selinux-hands-on-labs]$ sudo systemctl start testprog
 [james@selinux-dev selinux-hands-on-labs]$ ps -fZp $(cat /var/run/testprog.pid)
 system_u:system_r:unconfined_service_t:s0 root 11836 1  0 16:53 ?        00:00:00 /usr/bin/testprog /etc/testprog.conf /var/run/testprog.pid

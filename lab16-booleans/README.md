@@ -54,6 +54,14 @@ Se we can see above that our new boolean was created, and it is set to `on` as p
 [james@selinux-dev lab16-booleans]$ fg
 sudo /usr/bin/testprog-net /etc/testprog-net.conf /var/run/testprog-net.pid
 ^C
+```
+
+> **Note:** On newer distributions (e.g. Fedora 41+, RHEL 9+), `sudo` uses PTY mode by default, which may prevent Ctrl+C from reaching the process after `fg`. If Ctrl+C does not work, stop the process from another terminal using:
+> ```
+> sudo kill $(cat /var/run/testprog-net.pid)
+> ```
+
+```
 [james@selinux-dev lab16-booleans]$ sudo setsebool allow_testprog_use_network=off
 [james@selinux-dev lab16-booleans]$ getsebool -a | grep test
 allow_testprog_use_network --> off

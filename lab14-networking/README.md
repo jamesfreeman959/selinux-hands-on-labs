@@ -98,7 +98,7 @@ bind failed. Error
 [2]+  Exit 1                  sudo /usr/bin/testprog-net /etc/testprog-net.conf /var/run/testprog-net.pid
 ```
 
-Oh dear - we've failed. By now you will have guessed that SELinux also restricts access to network ports as well as files, `tty` devices and so on. This is over and above any firewall that you may or may not have running on your server - as with everything else we have explored so far it is an additional layer to the usual protections provided on a Linux system. Very that SELinux did indeed cause this:
+Oh dear - we've failed. By now you will have guessed that SELinux also restricts access to network ports as well as files, `tty` devices and so on. This is over and above any firewall that you may or may not have running on your server - as with everything else we have explored so far it is an additional layer to the usual protections provided on a Linux system. Verify that SELinux did indeed cause this:
 
 ```
 [james@selinux-dev lab14-networking]$ sudo ausearch -m AVC -c testprog-net -ts today
