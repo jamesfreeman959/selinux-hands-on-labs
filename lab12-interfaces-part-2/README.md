@@ -17,7 +17,7 @@ Segmentation fault (core dumped)
 This might not look any better - we're still getting a segmentation fault - however if you query the audit log again, you'll see a reduced number of AVC denials for `testcat`:
 
 ```
-[james@selinux-dev lab12-interfaces-part-2]$ sudo grep testcat /var/log/audit/audit.log | grep AVC
+[james@selinux-dev lab12-interfaces-part-2]$ sudo ausearch -m AVC -c testcat -ts today
 ...
 type=AVC msg=audit(1736176260.532:844): avc:  denied  { map } for  pid=16049 comm="testcat" path="/usr/bin/testcat" dev="vda4" ino=25196736 scontext=unconfined_u:unconfined_r:testcat_t:s0-s0:c0.c1023 tcontext=unconfined_u:object_r:testcat_exec_t:s0 tclass=file permissive=0
 ```

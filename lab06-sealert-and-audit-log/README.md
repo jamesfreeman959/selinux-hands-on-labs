@@ -17,11 +17,13 @@ type=USER_CMD msg=audit(1504795841.993:151): pid=11557 uid=1000 auid=0 ses=1 sub
 There's a huge amount of output including success messages so let's be a little more specific:
 
 ```
-[james@selinux-dev selinux-hands-on-labs]$ sudo grep AVC /var/log/audit/audit.log | grep testprog
+[james@selinux-dev selinux-hands-on-labs]$ sudo ausearch -m AVC -c testprog -ts today
 ...
 type=AVC msg=audit(1504818384.560:460): avc:  denied  { write } for  pid=12442 comm="testprog" name="testprog.pid" dev="tmpfs" ino=34664 scontext=unconfined_u:unconfined_r:testprog_t:s0-s0:c0.c1023 tcontext=unconfined_u:object_r:var_run_t:s0 tclass=file
 ...
 ```
+
+> **Note:** `ausearch` is purpose-built for searching audit logs - `-m AVC` filters by message type and `-c` filters by command name. Use `-ts today` to limit results to the current day, `-ts recent` for the last 10 minutes, or omit `-ts` to search the full log. Add `-i` to convert timestamps and hex-encoded fields to human-readable format.
 
 There are still lots of lines of output, which really show how many parts of the system even our simple little testprog tries to access. It also shows you how finely grained SELinux's access control is - it goes beyond filesystem restrictions to controlling socket creation, `chr` file access, console output and so much more. I have cherry picked a simple example from the output on my development system to share above - what it's saying is:
 

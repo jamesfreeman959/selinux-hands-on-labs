@@ -24,7 +24,7 @@ Now let's see what happens when it runs:
 ```
 [james@selinux-dev2 lab11-interfaces]$ sudo testcat /var/testprog/testprg.txt
 Segmentation fault (core dumped)
-[james@selinux-dev2 lab11-interfaces]$ sudo grep testcat /var/log/audit/audit.log | grep AVC
+[james@selinux-dev2 lab11-interfaces]$ sudo ausearch -m AVC -c testcat -ts today
 type=AVC msg=audit(1736175971.335:803): avc:  denied  { read write } for  pid=15978 comm="testcat" path="/dev/pts/0" dev="devpts" ino=3 scontext=unconfined_u:unconfined_r:testcat_t:s0-s0:c0.c1023 tcontext=unconfined_u:object_r:user_devpts_t:s0 tclass=chr_file permissive=0
 type=AVC msg=audit(1736175971.335:803): avc:  denied  { read append } for  pid=15978 comm="testcat" path="/dev/pts/0" dev="devpts" ino=3 scontext=unconfined_u:unconfined_r:testcat_t:s0-s0:c0.c1023 tcontext=unconfined_u:object_r:user_devpts_t:s0 tclass=chr_file permissive=0
 type=AVC msg=audit(1736175971.335:803): avc:  denied  { read append } for  pid=15978 comm="testcat" path="/dev/pts/0" dev="devpts" ino=3 scontext=unconfined_u:unconfined_r:testcat_t:s0-s0:c0.c1023 tcontext=unconfined_u:object_r:user_devpts_t:s0 tclass=chr_file permissive=0
