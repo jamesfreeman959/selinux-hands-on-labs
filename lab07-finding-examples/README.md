@@ -68,7 +68,12 @@ Through the menu system you can explore the policy, but I personally found it no
 
 # Finding the source code
 
-On EL9/Fedora 41, you need to file and download a copy of the **source** rpm for `selinux-policy`. At the time of writing this was `selinux-policy-38.1.45-3.el9_5.src.rpm ` for Rocky Linux 9 and `selinux-policy-41.27-1.fc41.src.rpm` for Fedora 41, or  which can be downloaded as follows:
+The simplest way to achieve this is to use the `dnf` command to download the source as follows:
+```
+[james@selinux-dev selinux-hands-on-labs]$ dnf download --source selinux-policy
+```
+
+However if you choose, you can do it the old fashioned way and download it with `curl` or `wget`. By way of example, on EL9/Fedora 41, you need to file and download a copy of the **source** rpm for `selinux-policy`. At the time of writing this was `selinux-policy-38.1.45-3.el9_5.src.rpm ` for Rocky Linux 9 and `selinux-policy-41.27-1.fc41.src.rpm` for Fedora 41, or  which can be downloaded as follows:
 
 ```
 [james@selinux-dev selinux-hands-on-labs]$ curl -O https://download.rockylinux.org/pub/rocky/9/AppStream/source/tree/Packages/s/selinux-policy-38.1.45-3.el9_5.src.rpm # Rocky Linux 9
