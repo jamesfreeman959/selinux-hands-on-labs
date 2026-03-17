@@ -90,5 +90,7 @@ define(`rw_dir_perms', `{ open read getattr lock search ioctl add_name remove_na
 
 Once you are happy with what macros are, and how they work, you can start to use them to build your own policy. Note that you don't have to use macros - however you can see how much that one line we have explored here has expanded to as we have explored the macros, so it makes sense to use them if you feel they will achieve your aims.
 
+> **Alternative tool:** If you find manually chasing nested macros with `seshowif` and `seshowdef` tedious, [semacro](https://github.com/pranlawate/semacro) is a Python CLI tool that provides a unified `lookup` command (handles both interfaces and defines), argument substitution, recursive expansion with `--depth`, and subcommands like `find`, `list`, `callers`, and `deps`. For example, `semacro lookup "files_pid_filetrans(ntpd_t, ntpd_var_run_t, file)" --expand` would recursively expand the macro with all arguments populated in a single command.
+
 We'll put all this together in the next lab and actually get `testprog` running from the shell in a confined domain!
 
