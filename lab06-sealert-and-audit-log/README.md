@@ -29,6 +29,15 @@ The process with PID `12442` (named `testprog`) tried to `write` to a `file` obj
 
 Given this log we can also see how we could go about creating a full policy for our application so that it works like it used to, only confined to it's own context. We also see the power of SELinux - even though we ran `testprog` as root, it cannot write it's own PID file in `/var/run`, which is not what you would normally expect!
 
+> **Note for modern kernels (4.13+, e.g. Fedora 37+, RHEL 9+):** The AVC denials you see may differ from the examples above. Since kernel 4.13, the `map` permission is required for memory-mapping files, and the kernel denies it before the process can run any application code. On a modern system you are likely to see:
+>
+> - `{ map }` denied on `testprog_exec_t` (the binary cannot be loaded into memory)
+> - `{ read write }` denied on `user_devpts_t` (PTY/terminal access)
+> - `{ create }` denied on `unix_dgram_socket` (syslog socket)
+> - `{ write }` denied on `console_device_t`
+>
+> rather than the `var_run_t` denial shown above. This is because SELinux evaluates each access sequentially — the process segfaults on the `map` denial before it ever reaches the PID file write. The `map` permission has been added to the entrypoint allow rule in labs 04 and 05 to prevent this early segfault, so subsequent denials will be visible. The exact denials you encounter are not important at this stage — what matters is understanding how to diagnose them.
+
 # sealert
 
 Of course whilst this log file can be quite useful once you know how to interpret it, it's not always easy to decipher. The `sealert` tool can help you create new policies and fix issues like this, but it should be used with caution and awareness to create a truly secure application. 
